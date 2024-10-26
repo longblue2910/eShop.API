@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  # Database section   --------------------------------------------------------------------------
+  customerdb:
+    image: postgres:alpine3.16
+
+  productdb:
+    image: mysql:8.0.29
+
+  basketdb:
+    image: redis:alpine
+
+  orderdb:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+
+
+  # Infrastructure section ----------------------------------------------------------------------
+  pgadmin:
+    image: dpage/pgadmin4
+  
+  portainer:
+    image: portainer/portainer-ce
+    
+
+  # API section ---------------------------------------------------------------------------------
+  customer.api:
+    image: ${DOCKER_REGISTRY-}customer-api:${PLATFORM:-linux}-${TAG:-latest}
+    build:
+     context: .
+     dockerfile: Services/Customer.API/Dockerfile
+
+  product.api:
+    image: ${DOCKER_REGISTRY-}product-api:${PLATFORM:-linux}-${TAG:-latest}
+    build:
+     context: .
+     dockerfile: Services/Product.API/Dockerfile
+
+  basket.api:
+    image: ${DOCKER_REGISTRY-}basket-api:${PLATFORM:-linux}-${TAG:-latest}
+    build:
+     context: .
+     dockerfile: Services/Basket.API/Dockerfile
+
+  ordering.api:
+    image: ${DOCKER_REGISTRY-}ordering-api:${PLATFORM:-linux}-${TAG:-latest}
+    build:
+     context: .
+     dockerfile: Services/Ordering/Ordering.API/Dockerfile
+
+
+# Network section -------------------------------------------------------------------------------
+networks:
+  ecommerce:
+    driver: bridge
+
+
+# Volume section --------------------------------------------------------------------------------
+volumes:
+  postgres_data:
+    name: postgres_data
+
+  pgadmin_data:
+    name: pgadmin_data
+
+  mysql_data:
+    name: mysql_data
+
+  portainer_data:
+    name: portainer_data
+
+  sqlserver_data:
+    name: sqlserver_data

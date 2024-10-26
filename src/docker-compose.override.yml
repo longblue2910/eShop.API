@@ -1,0 +1,116 @@
+version: '3.8'
+
+services:
+  # Database section --------------------------------------------------------------------------------------------
+  customerdb:
+    container_name: customerdb
+    environment:
+        - POSTGRES_USER=admin
+        - POSTGRES_PASSWORD=admin1234
+        - POSTGRES_DB=CustomerDb
+    restart: always
+    ports:
+        - "5433:5432"
+    volumes:
+        - postgres_data:/var/lib/postgresql/data
+
+  productdb:
+    container_name: productdb
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+        MYSQL_ROOT_PASSWORD: "Passw0rd!"
+        MYSQL_TCP_PORT: 3307
+        MYSQL_DATABASE: ProductDb
+    restart: always
+    volumes:
+        - mysql_data:/var/lib/mysql
+    ports:
+        - "3307:3307"
+
+  basketdb:
+    container_name: basketdb
+    restart: always
+    ports:
+        - "6379:6379"
+        
+  orderdb:
+    container_name: orderdb
+    environment:
+        SA_PASSWORD: "Passw0rd!"
+        ACCEPT_EULA: "Y"
+    restart: always
+    volumes:
+        - sqlserver_data:/var/lib/sqlserver/data    
+    ports:
+        - "1435:1433" 
+
+
+  # Infrastructure section ------------------------------------------------------------------------------------------
+  pgadmin:
+    container_name: pgadmin
+    environment:
+        - PGADMIN_DEFAULT_EMAIL=tienlong291099@gmail.com
+        - PGADMIN_DEFAULT_PASSWORD=Longhehe291099
+    restart: always
+    ports:
+        - "5050:80"
+    volumes:
+        - pgadmin_data:/root/.pgadmin
+
+  portainer:
+    container_name: portainer
+    restart: always
+    ports:
+        - "9000:9000"
+    volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+        - portainer_data:/data
+
+  # API section -------------------------------------------------------------------------------------------------------
+  customer.api:
+    container_name: customer.api
+    environment: 
+        - ASPNETCORE_ENVIRONMENT=Development
+        - ASPNETCORE_URLS=http://+80
+        - "ConnectionStrings:DefaultConnectionString=Server=customerdb;Port=5432;Database=CustomerDb;User id=admin;Password=admin1234;"
+    depends_on:
+        - customerdb
+    ports:
+        - "6003:80" 
+    restart: always
+
+  product.api:
+    container_name: product.api
+    environment: 
+        - ASPNETCORE_ENVIRONMENT=Development
+        - ASPNETCORE_URLS=http://+80
+        - "ConnectionStrings:DefaultConnectionString=Server=productdb;Port=3307;Database=ProductDb;Uid=root;Pwd=Passw0rd!;"
+    depends_on:
+        - productdb
+    ports:
+        - "6002:80"
+    restart: always
+
+  basket.api:
+    container_name: basket.api
+    environment: 
+        - ASPNETCORE_ENVIRONMENT=Development
+        - ASPNETCORE_URLS=http://+80
+        - "CacheSettings:ConnectionString=basketdb:6379"
+    depends_on:
+        - basketdb
+    ports:
+        - "6004:80"
+    restart: always
+
+  ordering.api:
+    container_name: ordering.api
+    environment: 
+        - ASPNETCORE_ENVIRONMENT=Development
+        - ASPNETCORE_URLS=http://+80
+        - "ConnectionStrings:DefaultConnection=Server=orderdb;Database=OrderDb;User Id=sa;Password=Passw0rd!;Multipleactiveresultsets=True;TrustServerCertificate=True"
+    depends_on:
+        - orderdb
+    ports:
+        - "6005:80" 
+    restart: always

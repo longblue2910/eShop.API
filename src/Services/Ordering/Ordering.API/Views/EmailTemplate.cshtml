@@ -1,0 +1,39 @@
+﻿@model Shared.Services.Email.MailModel
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+</head>
+<body>
+    <div style="margin-bottom:5px">
+        <p>&nbsp;&nbsp;&nbsp;&nbsp; Đơn hàng: @Model.DocumentNo</p>
+    </div>
+    <div style="margin-bottom:5px">
+        <p>&nbsp;&nbsp;&nbsp;&nbsp; Sản phẩm: Iphone 14 Pro Max</p>
+    </div>
+    <div style="margin-bottom:5px">
+        <p>&nbsp;&nbsp;&nbsp;&nbsp; Khách hàng: @Model.FirstName @Model.LastName</p>
+    </div>
+    <div style="margin-bottom:5px">
+        <p>&nbsp;&nbsp;&nbsp;&nbsp; Địa chỉ: @Model.ShippingAddress, @Model.InvoiceAddress</p>
+    </div>
+    <div style="margin-bottom:5px">
+        <p>&nbsp;&nbsp;&nbsp;&nbsp; Tổng số tiền: @Model.TotalPrice $</p>
+    </div>
+    @if (!string.IsNullOrEmpty(Model.Url))
+    {
+        <div style="margin-bottom:5px">
+            <p>
+                &nbsp;&nbsp;&nbsp;&nbsp; Đường link: <a href="@Model.Url" target="_blank">Bấm vào đây</a>
+            </p>
+        </div>
+    }
+    <div>
+        <p>Được gửi từ: Rim da Silva lúc @DateTime.UtcNow.AddHours(7).ToString("dd/MM/yyyy hh:mm")</p>
+        <p>--------------------------------------------------------------------</p>
+        <p>ĐÂY LÀ MAIL TỰ ĐỘNG GỬI TỪ HỆ THỐNG.VUI LÒNG KHÔNG TRẢ LỜI VỀ EMAIL NÀY !</p>
+        <p>--------------------------------------------------------------------</p>
+    </div>
+</body>
+</html>
